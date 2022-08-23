@@ -35,11 +35,9 @@ class UsersRepository implements IUsersRepository {
 
   turnAdmin(receivedUser: User): User {
     const index = this.users.indexOf(receivedUser);
-
     if (index < 0) {
       throw new Error("User not found");
     }
-
     this.users[index].admin = true;
     return this.users[index];
   }

@@ -26,11 +26,6 @@ class UsersRepository implements IUsersRepository {
 
   findById(id: string): User | undefined {
     const user = this.users.find((user) => user.id === id);
-
-    if (!user) {
-      throw new Error(`User with id ${id} not found`);
-    }
-
     return user;
   }
 

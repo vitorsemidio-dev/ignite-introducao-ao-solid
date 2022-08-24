@@ -1,0 +1,289 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Atlas",
+    "description": "Esta é a documentação sobre a Atlas API",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Vitor Emidio",
+      "email": "vitorsemidio-dev@github.com"
+    }
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Cria um novo usuário",
+        "description": "Cria um novo usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "id do usuário"
+                  },
+                  "name": {
+                    "type": "string",
+                    "required": true,
+                    "description": "nome do usuário"
+                  },
+                  "admin": {
+                    "type": "boolean",
+                    "description": "Usuário é admin? Caso não informado, o usuário criado terá o valor como false"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "required": true
+                  },
+                  "created_at": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Data da criação do usuário"
+                  },
+                  "updated_at": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Data de atualização do usuário"
+                  }
+                },
+                "example": {
+                  "email": "user_email_sample@email.com",
+                  "name": "User Name Sample"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Novo usuário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "E-mail já sendo utilizado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "This email is already in use."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Users"],
+        "summary": "Retorna todos os usuários.",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "header",
+            "description": "Id do usuário administrador",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de todos os usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/User"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Falha ao listar usuários. Somente admin pode acessar rota",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "User not admin"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Retorna um usuário específico",
+        "description": "Retorna um usuário específico",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "description": "Id do usuário a ser buscado",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/definitions/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "User not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}/admin": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Torna um usuário em admin",
+        "description": "Torna um usuário em admin",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "Id do usuário a ser transformado a um admin",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário tornou-se admin com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/definitions/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string"
+                    }
+                  },
+                  "example": {
+                    "error": "User not found"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "id do usuário"
+        },
+        "name": {
+          "type": "string",
+          "required": true,
+          "description": "nome do usuário"
+        },
+        "admin": {
+          "type": "boolean",
+          "description": "Usuário é admin? Caso não informado, o usuário criado terá o valor como false"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "required": true
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date",
+          "description": "Data da criação do usuário"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date",
+          "description": "Data de atualização do usuário"
+        }
+      },
+      "example": {
+        "id": "id",
+        "admin": false,
+        "email": "user_email_sample@email.com",
+        "name": "User Name Sample",
+        "created_at": "2022-08-23T07:54:19.677Z",
+        "updated_at": "2022-08-23T07:54:19.677Z"
+      }
+    }
+  }
+}
